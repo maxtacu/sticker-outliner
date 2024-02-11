@@ -1,0 +1,4 @@
+/bin
+*.webp
+*.png
+.env
