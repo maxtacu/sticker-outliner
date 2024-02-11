@@ -33,6 +33,12 @@ func main() {
 		return
 	}
 
+	b.Handle("/start", func(c tele.Context) error {
+		return c.Send(`Hello! I'm bot that can outline stickers. 
+		Just send me a sticker and I'll outline it for you, then forward the resulted image to the @Stickers to make it as a sticker.
+		<b>As a prerequisite you should already have a stiker pack configured in @Stickers, perform "adsticker" command and make @Stickers wait for the image.</b>`, tele.ModeHTML)
+	})
+
 	b.Handle(tele.OnMedia, func(c tele.Context) error {
 		media := c.Message().Media()
 		if media.MediaType() == "sticker" {
