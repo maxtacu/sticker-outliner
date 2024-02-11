@@ -34,14 +34,19 @@ func main() {
 	}
 
 	b.Handle(tele.OnMedia, func(c tele.Context) error {
-		// return c.Send("Photo received!")
 		media := c.Message().Media()
 		if media.MediaType() == "sticker" {
 			sticker_data := media.(*tele.Sticker)
 			sticker_file := sticker_data.File
-			b.Download(&sticker_file, "sticker.webp")
-			ImageOutline("sticker.webp", "sticker_outlined.png")
-			return c.Send(fmt.Sprintf("Height: %d, Width: %d", sticker_data.Height, sticker_data.Width))
+			webpFilename := fmt.Sprintf("%s.webp", sticker_file.FileID[0:10])
+			pngFilename := fmt.Sprintf("%s.png", sticker_file.FileID[0:10])
+			b.Download(&sticker_file, webpFilename)
+			outlinedSticker := ImageOutline(webpFilename, pngFilename)
+			file := &tele.Document{File: tele.FromDisk(outlinedSticker), MIME: "image/png", FileName: pngFilename}
+			c.Send(file)
+			os.Remove(webpFilename)
+			os.Remove(pngFilename)
+			return c.Send("Now just forward this image to the Stickers chat to make it as a sticker")
 		}
 		return c.Send("Not a sticker")
 	})
